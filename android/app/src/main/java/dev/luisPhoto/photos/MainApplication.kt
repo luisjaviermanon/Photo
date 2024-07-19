@@ -1,4 +1,4 @@
-package com.instagram
+package dev.luisPhoto.photos
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -74,9 +74,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.instagram"
+    namespace "dev.luisPhoto.photos"
     defaultConfig {
-        applicationId "com.instagram"
+        applicationId "dev.luisPhoto.photos"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
