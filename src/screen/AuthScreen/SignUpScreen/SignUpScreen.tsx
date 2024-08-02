@@ -42,7 +42,7 @@ const SignUpScreen = () => {
         },
       });
       console.log(response);
-      navigation.navigate('Confirm email', {username});
+      navigation.navigate('Confirm email', {email});
     } catch (e) {
       Alert.alert('Oops', (e as Error).message);
     } finally {

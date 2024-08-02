@@ -15,12 +15,12 @@ import CustomButton from '../components/CustomButton';
 import SocialSignInButtons from '../components/SocialSignInButtons';
 import {useAuthContext} from '../../../contexts/AuthContext';
 import {SignInNavigationProp} from '../../../types/navigation';
-
 type SignInData = {
-  username: string;
+  email: string;
   password: string;
 };
-
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const SignInScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation<SignInNavigationProp>();
@@ -28,18 +28,18 @@ const SignInScreen = () => {
   const {setUser} = useAuthContext();
   const {control, handleSubmit, reset} = useForm<SignInData>();
   const Logo = require('../../../assets/images/logo.png');
-  const onSignInPressed = async ({username, password}: SignInData) => {
+  const onSignInPressed = async ({email, password}: SignInData) => {
     if (loading) {
       return;
     }
     setLoading(true);
     try {
-      const cognitoUser = await signIn({username, password});
+      const cognitoUser = await signIn({username: email, password});
       // Todo save user data in context
       setUser(cognitoUser);
     } catch (e) {
       if ((e as Error).name === 'UserNotConfirmedException') {
-        navigation.navigate('Confirm email', {username: username});
+        navigation.navigate('Confirm email', {email});
       }
       Alert.alert('Ops', (e as Error).message);
     } finally {
@@ -68,10 +68,13 @@ const SignInScreen = () => {
         />
 
         <FormInput
-          name="username"
-          placeholder="Username"
+          name="email"
           control={control}
-          rules={{required: 'Username is required'}}
+          placeholder="Email"
+          rules={{
+            required: 'Email is required',
+            pattern: {value: EMAIL_REGEX, message: 'Email is invalid'},
+          }}
         />
 
         <FormInput

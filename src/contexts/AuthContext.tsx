@@ -5,33 +5,43 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {getCurrentUser} from 'aws-amplify/auth';
+import {getCurrentUser, AuthUser} from 'aws-amplify/auth';
 import {Hub} from 'aws-amplify/utils';
 
-type UserType = null | undefined;
+type UserType = {
+  username: string;
+  userId: string;
+} | null;
 
 type AuthContextType = {
   userAuth: UserType;
-  userId: string;
+  userId: string | undefined;
   loadingAuth: boolean;
-  //jwtToken: string | null;
+  setUser: (user: UserType) => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
-  userAuth: undefined,
-  userId: '' || undefined,
+  userAuth: null,
+  userId: undefined,
+  loadingAuth: true,
+  setUser: () => {},
 });
 
 const AuthContextProvider = ({children}: {children: ReactNode}) => {
-  const [userAuth, setUser] = useState<UserType>(undefined);
+  const [userAuth, setUser] = useState<UserType>(null);
   const [loadingAuth, setLoading] = useState(true);
 
   const checkUser = async () => {
     try {
       const authUser = await getCurrentUser();
-      setUser(authUser);
+      if (authUser) {
+        setUser({
+          username: authUser.username,
+          userId: authUser.attributes.sub,
+        });
+      }
     } catch (e) {
-      setUser(null);
+      console.error(e);
     } finally {
       setLoading(false);
     }
@@ -44,28 +54,26 @@ const AuthContextProvider = ({children}: {children: ReactNode}) => {
   useEffect(() => {
     const authListener = Hub.listen('auth', ({payload: {event, data}}) => {
       switch (event) {
-        case 'signedIn':
-          // Handle sign in event
+        case 'signIn':
           console.log('User signed in:', data);
           checkUser();
           break;
-        case 'signedOut':
-          // Handle sign out event
+        case 'signOut':
           console.log('User signed out:', data);
           setUser(null);
-          break; // Add break statement here
+          break;
         default:
           break;
       }
     });
     return () => {
-      authListener(); // Call the returned function to unsubscribe from the event
+      Hub.remove('auth', authListener);
     };
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{userAuth, loadingAuth, userId: userAuth?.userId}}>
+      value={{userAuth, loadingAuth, userId: userAuth?.userId, setUser}}>
       {children}
     </AuthContext.Provider>
   );
