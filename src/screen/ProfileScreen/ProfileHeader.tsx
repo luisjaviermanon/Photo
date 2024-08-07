@@ -7,15 +7,11 @@ import styles from './styles';
 import Button from '../../components/Button';
 import {useNavigation} from '@react-navigation/native';
 import {ProfileNavigationProp} from '../../types/navigation';
+import {useAuthContext} from '../../contexts/AuthContext';
 const ProfileHeader = () => {
   const navigation = useNavigation<ProfileNavigationProp>();
-  async function handleSignOut() {
-    try {
-      await signOut();
-    } catch (error) {
-      console.log('error signing out: ', error);
-    }
-  }
+  const {user, handleSignOut} = useAuthContext();
+
   return (
     <View style={styles.row}>
       <View style={styles.headerRow}>

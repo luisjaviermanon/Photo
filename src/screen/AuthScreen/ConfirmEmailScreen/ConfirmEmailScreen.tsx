@@ -13,21 +13,22 @@ import {useRoute} from '@react-navigation/native';
 import {confirmSignUp, resendSignUpCode} from 'aws-amplify/auth';
 
 type ConfirmEmailData = {
-  username: string;
+  email: string;
   confirmationCode: string;
 };
-
+const EMAIL_REGEX =
+  /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const ConfirmEmailScreen = () => {
   const route = useRoute<ConfirmEmailRouteProp>();
-  const {control, handleSubmit, watch} = useForm<ConfirmEmailData>({
-    defaultValues: {username: route.params.username},
+  const {control, handleSubmit, watch, reset} = useForm<ConfirmEmailData>({
+    defaultValues: {email: route.params.email},
   });
-  const usr = watch('username');
+  const email = watch('email');
   const navigation = useNavigation<ConfirmEmailNavigationProp>();
   const [loading, setLoading] = useState(false);
 
   const onConfirmPressed = async ({
-    username,
+    email,
     confirmationCode,
   }: ConfirmEmailData) => {
     if (loading) {
@@ -35,7 +36,7 @@ const ConfirmEmailScreen = () => {
     }
     setLoading(true);
     try {
-      await confirmSignUp({username, confirmationCode});
+      await confirmSignUp({username: email, confirmationCode});
       navigation.navigate('Sign in');
     } catch (e) {
       Alert.alert('oops', (e as Error).message);
@@ -50,7 +51,7 @@ const ConfirmEmailScreen = () => {
 
   const onResendPress = async () => {
     try {
-      await resendSignUpCode({username: usr});
+      await resendSignUpCode({username: email});
       Alert.alert('Check your email', 'The code has been sent');
     } catch (e) {
       Alert.alert('Oops', (e as Error).message);
@@ -63,11 +64,12 @@ const ConfirmEmailScreen = () => {
         <Text style={styles.title}>Confirm your email</Text>
 
         <FormInput
-          name="username"
+          name="email"
           control={control}
-          placeholder="Username"
+          placeholder="Email"
           rules={{
-            required: 'Username is required',
+            required: 'Email is required',
+            pattern: {value: EMAIL_REGEX, message: 'Email is invalid'},
           }}
         />
 

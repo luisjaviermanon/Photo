@@ -15,12 +15,15 @@ import CustomButton from '../components/CustomButton';
 import SocialSignInButtons from '../components/SocialSignInButtons';
 import {useAuthContext} from '../../../contexts/AuthContext';
 import {SignInNavigationProp} from '../../../types/navigation';
+
 type SignInData = {
   email: string;
   password: string;
 };
+
 const EMAIL_REGEX =
   /^[a-zA-Z0-9.!#$%&’*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 const SignInScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation<SignInNavigationProp>();
@@ -28,6 +31,7 @@ const SignInScreen = () => {
   const {setUser} = useAuthContext();
   const {control, handleSubmit, reset} = useForm<SignInData>();
   const Logo = require('../../../assets/images/logo.png');
+
   const onSignInPressed = async ({email, password}: SignInData) => {
     if (loading) {
       return;
@@ -35,8 +39,8 @@ const SignInScreen = () => {
     setLoading(true);
     try {
       const cognitoUser = await signIn({username: email, password});
-      // Todo save user data in context
       setUser(cognitoUser);
+      console.log(setUser);
     } catch (e) {
       if ((e as Error).name === 'UserNotConfirmedException') {
         navigation.navigate('Confirm email', {email});
@@ -46,8 +50,6 @@ const SignInScreen = () => {
       setLoading(false);
       reset();
     }
-    // validate user
-    // navigation.navigate('Home');
   };
 
   const onForgotPasswordPressed = () => {

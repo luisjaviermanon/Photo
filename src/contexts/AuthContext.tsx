@@ -1,83 +1,102 @@
-import React, {
-  createContext,
+import {
+  Dispatch,
   ReactNode,
+  SetStateAction,
+  createContext,
   useContext,
   useEffect,
   useState,
 } from 'react';
-import {getCurrentUser, AuthUser} from 'aws-amplify/auth';
 import {Hub} from 'aws-amplify/utils';
+import {
+  getCurrentUser,
+  fetchAuthSession,
+  signOut as amplifySignOut,
+} from '@aws-amplify/auth';
+import {HubCallback} from '@aws-amplify/core';
 
 type UserType = {
   username: string;
   userId: string;
+  signInDetails?: any;
 } | null;
 
 type AuthContextType = {
-  userAuth: UserType;
-  userId: string | undefined;
-  loadingAuth: boolean;
-  setUser: (user: UserType) => void;
+  user: UserType;
+  userId: string;
+  setUser: Dispatch<SetStateAction<UserType>>;
+  handleSignOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
-  userAuth: null,
-  userId: undefined,
-  loadingAuth: true,
+  user: null,
+  userId: '',
   setUser: () => {},
+  handleSignOut: async () => {},
 });
 
 const AuthContextProvider = ({children}: {children: ReactNode}) => {
-  const [userAuth, setUser] = useState<UserType>(null);
-  const [loadingAuth, setLoading] = useState(true);
+  const [user, setUser] = useState<UserType>(null);
 
   const checkUser = async () => {
     try {
-      const authUser = await getCurrentUser();
-      if (authUser) {
-        setUser({
-          username: authUser.username,
-          userId: authUser.attributes.sub,
-        });
-      }
+      const currentUser = await getCurrentUser();
+      const {username, userId} = currentUser;
+      setUser({username, userId});
     } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
+      setUser(null);
+    }
+  };
+  const checkSession = async () => {
+    try {
+      const session = await fetchAuthSession({forceRefresh: true});
+      const {accessToken, idToken} = session.tokens ?? {};
+      console.log({accessToken, idToken});
+    } catch (err) {
+      console.log('este es el error', err);
+    }
+  };
+  const handleSignOut = async () => {
+    try {
+      await amplifySignOut();
+      setUser(null);
+    } catch (error) {
+      console.log('error signing out: ', error);
     }
   };
 
   useEffect(() => {
     checkUser();
+    checkSession();
   }, []);
 
   useEffect(() => {
-    const authListener = Hub.listen('auth', ({payload: {event, data}}) => {
-      switch (event) {
-        case 'signIn':
-          console.log('User signed in:', data);
-          checkUser();
-          break;
-        case 'signOut':
-          console.log('User signed out:', data);
-          setUser(null);
-          break;
-        default:
-          break;
+    const listener: HubCallback = data => {
+      const {event} = data.payload;
+      if (event === 'signOut') {
+        setUser(null);
       }
-    });
+
+      if (event === 'signIn') {
+        checkUser();
+      }
+    };
+    const hubSubscription = Hub.listen('auth', listener);
     return () => {
-      Hub.remove('auth', authListener);
+      hubSubscription();
     };
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{userAuth, loadingAuth, userId: userAuth?.userId, setUser}}>
+      value={{user, userId: user?.userId ?? '', setUser, handleSignOut}}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+export const useAuthContext = () => {
+  return useContext(AuthContext);
+};
+
 export default AuthContextProvider;
-export const useAuthContext = () => useContext(AuthContext);

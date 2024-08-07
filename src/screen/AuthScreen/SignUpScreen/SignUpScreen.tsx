@@ -35,7 +35,7 @@ const SignUpScreen = () => {
   }: SignUpData) => {
     try {
       const response = await signUp({
-        username,
+        username: email,
         password,
         options: {
           userAttributes: {name, email},

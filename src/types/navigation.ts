@@ -3,9 +3,10 @@ import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {RouteProp} from '@react-navigation/native';
 
 export type RootNavigator = {
+  Auth: undefined;
   Home: undefined;
   Comments: {postId: string};
-  Auth: undefined;
+  ProfileSetup: undefined;
 };
 
 export type BottomTabNavigatorParamList = {
@@ -21,24 +22,30 @@ export type SearchTabNavigatorParamList = {
   Posts: undefined;
 };
 
-export type MyProfileNavigationProp =
-  BottomTabNavigationProp<BottomTabNavigatorParamList>;
-('MyProfile');
+export type MyProfileNavigationProp = BottomTabNavigationProp<
+  BottomTabNavigatorParamList,
+  'MyProfile'
+>;
 
-export type MyProfileRouteProp = RouteProp<BottomTabNavigatorParamList>;
-('MyProfile');
+export type MyProfileRouteProp = RouteProp<
+  BottomTabNavigatorParamList,
+  'MyProfile'
+>;
 
 export type HomeStackNavigatorParamList = {
   Feed: undefined;
   UserProfile: {userId: string};
 };
 
-export type UserProfileNavigationProp =
-  NativeStackNavigationProp<HomeStackNavigatorParamList>;
-('UserProfile');
+export type UserProfileNavigationProp = NativeStackNavigationProp<
+  HomeStackNavigatorParamList,
+  'UserProfile'
+>;
 
-export type UserProfileRouteProp = RouteProp<HomeStackNavigatorParamList>;
-('UserProfile');
+export type UserProfileRouteProp = RouteProp<
+  HomeStackNavigatorParamList,
+  'UserProfile'
+>;
 
 export type FeedNavigationProp = NativeStackNavigationProp<
   HomeStackNavigatorParamList,
@@ -50,9 +57,11 @@ export type ProfileStackNavigatorParamList = {
   'Edit Profile': undefined;
 };
 
-export type ProfileNavigationProp =
-  NativeStackNavigationProp<ProfileStackNavigatorParamList>;
-('Profile');
+export type ProfileNavigationProp = NativeStackNavigationProp<
+  ProfileStackNavigatorParamList,
+  'Profile'
+>;
+
 // Auth Stack Navigator
 export type AuthStackNavigatorParamList = {
   'Sign in': undefined;

@@ -5,10 +5,10 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import CommentsScreen from '../screen/CommentsScreen/CommentsScreen';
 import ButtonTabNavigator from './ButtonTabNavigator';
-import {RootNavigationParamList} from '../types/navigation';
+import {RootNavigator} from '../types/navigation';
 import AuthStackNavigator from './AuthStackNavigation';
 import {useAuthContext} from '../contexts/AuthContext';
-const Stack = createNativeStackNavigator<RootNavigationParamList>();
+const Stack = createNativeStackNavigator<RootNavigator>();
 const Navigation = () => {
   const {user} = useAuthContext();
   return (

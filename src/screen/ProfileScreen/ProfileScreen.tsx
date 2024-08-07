@@ -14,9 +14,15 @@ const ProfileScreen = () => {
   const navigation = useNavigation<
     UserProfileNavigationProp | MyProfileNavigationProp
   >();
-  const userId = route.params?.user?.Id;
+  const userId = route.params?.userId;
   // query the user with user.Id
-  return <FeedGridView data={user.posts} ListHeaderComponent={ProfileHeader} />;
+  return (
+    <FeedGridView
+      data={user.posts}
+      ListHeaderComponent={() => <ProfileHeader user={user} />}
+      keyExtractor={(item, index) => item.id.toString() || index.toString()}
+    />
+  );
 };
 
 export default ProfileScreen;
