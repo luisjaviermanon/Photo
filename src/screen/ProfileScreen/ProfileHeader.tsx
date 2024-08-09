@@ -10,7 +10,7 @@ import {ProfileNavigationProp} from '../../types/navigation';
 import {useAuthContext} from '../../contexts/AuthContext';
 const ProfileHeader = () => {
   const navigation = useNavigation<ProfileNavigationProp>();
-  const {user, handleSignOut} = useAuthContext();
+  const {handleSignOut} = useAuthContext();
 
   return (
     <View style={styles.row}>
