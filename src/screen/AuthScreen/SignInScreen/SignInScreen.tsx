@@ -13,7 +13,6 @@ import {useForm} from 'react-hook-form';
 import FormInput from '../components/FormInput';
 import CustomButton from '../components/CustomButton';
 import SocialSignInButtons from '../components/SocialSignInButtons';
-import {useAuthContext} from '../../../contexts/AuthContext';
 import {SignInNavigationProp} from '../../../types/navigation';
 
 type SignInData = {
@@ -28,7 +27,7 @@ const SignInScreen = () => {
   const {height} = useWindowDimensions();
   const navigation = useNavigation<SignInNavigationProp>();
   const [loading, setLoading] = useState(false);
-  const {setUser} = useAuthContext();
+
   const {control, handleSubmit, reset} = useForm<SignInData>();
   const Logo = require('../../../assets/images/logo.png');
 
@@ -38,9 +37,7 @@ const SignInScreen = () => {
     }
     setLoading(true);
     try {
-      const cognitoUser = await signIn({username: email, password});
-      setUser(cognitoUser);
-      console.log(setUser);
+      await signIn({username: email, password});
     } catch (e) {
       if ((e as Error).name === 'UserNotConfirmedException') {
         navigation.navigate('Confirm email', {email});

@@ -158,6 +158,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-amplify/rtn-web-browser@npm:^1.0.31":
+  version: 1.0.31
+  resolution: "@aws-amplify/rtn-web-browser@npm:1.0.31"
+  checksum: e60f48fdf1d1b7c806fa3802a060309049429e8e4b4b0c667bd390fefecaa0c0e5a2b643498682d615e600a23a3c2aff1013dfe2ec7b7b7904d32ae7e4b492e2
+  languageName: node
+  linkType: hard
+
 "@aws-amplify/storage@npm:6.5.0":
   version: 6.5.0
   resolution: "@aws-amplify/storage@npm:6.5.0"
@@ -8496,6 +8503,7 @@ __metadata:
   resolution: "luismanonphotos@workspace:."
   dependencies:
     "@aws-amplify/react-native": ^1.1.2
+    "@aws-amplify/rtn-web-browser": ^1.0.31
     "@aws-amplify/ui-react-native": ^2.2.3
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.20.0
