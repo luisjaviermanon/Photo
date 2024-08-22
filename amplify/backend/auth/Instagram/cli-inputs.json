@@ -59,7 +59,17 @@
       ]
     },
     "breakCircularDependency": true,
-    "dependsOn": [],
+    "dependsOn": [
+      {
+        "category": "function",
+        "resourceName": "InstagramPostConfirmation",
+        "triggerProvider": "Cognito",
+        "attributes": [
+          "Arn",
+          "Name"
+        ]
+      }
+    ],
     "hostedUI": true,
     "hostedUIDomainName": "2z2uff7butvj",
     "authProvidersUserPool": [
@@ -67,6 +77,16 @@
       "Google"
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"public_profile\",\"AttributeMapping\":{\"name\":\"name\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid profile\",\"AttributeMapping\":{\"name\":\"name\",\"username\":\"sub\"}}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"luismanonphotos://\"],\"LogoutURLs\":[\"luismanonphotos://\"]}"
+    "triggers": {
+      "PostConfirmation": [
+        "custom"
+      ]
+    },
+    "parentStack": {
+      "Ref": "AWS::StackId"
+    },
+    "permissions": [],
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"luismanonphotos://\"],\"LogoutURLs\":[\"luismanonphotos://\"]}",
+    "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"InstagramPostConfirmation\"\n  }\n]"
   }
 }
