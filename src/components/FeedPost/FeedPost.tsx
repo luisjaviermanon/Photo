@@ -9,13 +9,14 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import Comment from '../Comment';
 import styles from './style';
-import {IPost} from '../../types/models';
 import DoublePressable from '../DoublePressable';
 import Carousel from '../Carousel';
 import VideoPlayer from '../VideoPlayer';
 import {FeedNavigationProp} from '../../types/navigation';
+import {Post} from '../../API';
+import {DEFAULT_USER_IMAGE} from '../../config/index';
 interface IFeedPost {
-  post: IPost;
+  post: Post;
   isVisible: boolean;
 }
 const FeedPost = ({post, isVisible}: IFeedPost) => {
@@ -23,7 +24,9 @@ const FeedPost = ({post, isVisible}: IFeedPost) => {
   const [isLiked, setIsLiked] = useState(false);
   const navigation = useNavigation<FeedNavigationProp>();
   const navigateToUser = () => {
-    navigation.navigate('UserProfile', {userId: post.user.id});
+    if (post.User) {
+      navigation.navigate('UserProfile', {userId: post.User.id});
+    }
   };
   const navigateToComments = () => {
     navigation.navigate('Comments', {
@@ -64,12 +67,12 @@ const FeedPost = ({post, isVisible}: IFeedPost) => {
       <View style={styles.header}>
         <Image
           source={{
-            uri: post.user.image,
+            uri: post.User?.image || DEFAULT_USER_IMAGE,
           }}
           style={styles.userAvatar}
         />
         <Text onPress={navigateToUser} style={styles.userName}>
-          {post.user.username}
+          {post.User?.username}
         </Text>
         <Entypo
           name="dots-three-horizontal"
@@ -116,7 +119,7 @@ const FeedPost = ({post, isVisible}: IFeedPost) => {
         </Text>
         {/* Post description */}
         <Text style={styles.text} numberOfLines={isDescriptionExpanded ? 0 : 3}>
-          <Text style={styles.bold}>{post.user.username}</Text>{' '}
+          <Text style={styles.bold}>{post.User?.username}</Text>{' '}
           {post.description}
         </Text>
         <Text style={{color: colors.grey}} onPress={ToggleDescriptionExpanded}>
@@ -126,9 +129,9 @@ const FeedPost = ({post, isVisible}: IFeedPost) => {
         <Text style={{color: colors.grey}} onPress={navigateToComments}>
           View all {post.nofComments} comment
         </Text>
-        {post.comments.map(comment => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
+        {(post.Comments?.items || []).map(
+          comment => comment && <Comment key={comment.id} comment={comment} />,
+        )}
         {/* Posted date */}
         <Text style={{color: colors.grey}}>{post.createdAt}</Text>
       </View>
