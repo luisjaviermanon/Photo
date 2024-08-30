@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.5",
     "@aws-amplify/react-native": "^1.1.2",
     "@aws-amplify/rtn-web-browser": "^1.0.31",
     "@aws-amplify/ui-react-native": "^2.2.3",
@@ -19,6 +20,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.10.0",
     "aws-amplify": "^6.4.0",
+    "graphql": "^16.9.0",
     "react": "18.3.1",
     "react-native": "^0.75.2",
     "react-native-get-random-values": "^1.11.0",

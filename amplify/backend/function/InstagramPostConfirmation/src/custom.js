@@ -1,10 +1,12 @@
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-import {DynamoDBClient, ScanCommand} from '@aws-sdk/client-dynamodb';
+const {DynamoDBClient} = require('@aws-sdk/client-dynamodb');
 
 const docClient = new DynamoDBClient();
-const TableName = '';
+const env = process.env.ENV;
+const AppsyncID = process.env.API_INSTAGRAM_GRAPHQLAPIIDOUTPUT;
+const TableName = `User-${AppsyncID}-${env}`; // TableName-AppsyncID-env
 const userExits = async id => {
   const params = {
     TableName,
@@ -12,14 +14,22 @@ const userExits = async id => {
   };
   try {
     const response = await docClient.get(params).promise();
-    return !!response;
+    return !!response?.item;
   } catch (e) {
     return false;
   }
 };
 const saveUser = async user => {
+  const date = new Date();
+  const timestamp = date.getTime();
+  const dateStr = date.toDateString();
   const Item = {
       ...user,
+      __typename: 'User',
+      createdAt: dateStr,
+      updatedAt: dateStr,
+      _LastChangedAt: timestamp,
+      _version: 1,
     },
     params = {
       TableName,
@@ -45,8 +55,11 @@ exports.handler = async (event, context) => {
     email: email,
   };
   // check if the user already exits
-  if (!userExits(newUser.id)) {
-    saveUser(newUser);
+  if (await !userExits(newUser.id)) {
+    await saveUser(newUser);
+    console.log(`User ${newUser.id} has been saved to the database`);
+  } else {
+    console.log(`User ${newUser.id} already exits`);
   }
   return event;
 };
