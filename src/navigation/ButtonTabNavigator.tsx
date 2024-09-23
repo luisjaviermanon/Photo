@@ -40,10 +40,7 @@ const ButtonTabNavigator = () => {
 
       <Tab.Screen
         name="Upload"
-        component={
-          //PostUploadScreen
-          ProfileScreen
-        }
+        component={PostUploadScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({color, size}) => (

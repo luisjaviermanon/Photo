@@ -26,3 +26,6 @@ export interface IComment {
   comment: string;
   user: IUser;
 }
+export interface IButton {
+  onPress: () => void;
+}

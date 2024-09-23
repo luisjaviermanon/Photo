@@ -1,21 +1,28 @@
-import React, {useState, useRef, useEffect} from 'react';
-import {FlatList, ViewabilityConfig, ViewToken} from 'react-native';
-import {generateClient} from 'aws-amplify/api';
+import {
+  ActivityIndicator,
+  FlatList,
+  Text,
+  View,
+  ViewabilityConfig,
+  ViewToken,
+} from 'react-native';
 import FeedPost from '../../components/FeedPost';
-import {listPosts} from '../../graphql/queries';
+import {useRef, useState} from 'react';
+import {useQuery} from '@apollo/client';
+import {listPosts} from './queries';
+import {
+  ListPostsQuery,
+  ListPostsQueryVariables,
+  ModelSortDirection,
+} from '../../API';
+import ApiErrorMessage from '../../components/ApiErrorMessage';
+
 const HomeScreen = () => {
   const [activePostId, setActivePostId] = useState<string | null>(null);
-  const [posts, setPosts] = useState();
-  const fetchPost = async () => {
-    const client = generateClient();
-    const response = await client.graphql({
-      query: listPosts,
-    });
-    setPosts(response.data.listPosts.items);
-  };
-  useEffect(() => {
-    fetchPost();
-  }, []);
+  const {data, loading, error, refetch} = useQuery<
+    ListPostsQuery,
+    ListPostsQueryVariables
+  >(listPosts);
 
   const viewabilityConfig: ViewabilityConfig = {
     itemVisiblePercentThreshold: 51,
@@ -27,15 +34,47 @@ const HomeScreen = () => {
       }
     },
   );
+
+  if (loading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return (
+      <ApiErrorMessage title="Error fetching posts" message={error.message} />
+    );
+  }
+  console.log('Este es la data', data);
+  const posts = data?.listPosts?.items || [];
+
   return (
     <FlatList
       data={posts}
-      renderItem={({item}) => (
-        <FeedPost post={item} isVisible={activePostId === item.id} />
-      )}
-      showsVerticalScrollIndicator={false}
       viewabilityConfig={viewabilityConfig}
       onViewableItemsChanged={onViewableItemsChanged.current}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{flexGrow: 1}}
+      onRefresh={refetch}
+      refreshing={loading}
+      ListEmptyComponent={
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text>No Posts.</Text>
+        </View>
+      }
+      renderItem={({item}) =>
+        item && (
+          <FeedPost
+            post={item}
+            isVisible={activePostId === item.id}
+            //  onPostUpdate={refetch}
+          />
+        )
+      }
     />
   );
 };
